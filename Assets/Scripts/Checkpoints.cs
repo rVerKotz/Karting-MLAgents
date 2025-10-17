@@ -10,5 +10,9 @@ public class Checkpoints : MonoBehaviour
     private void Awake()
     {
         checkPoints = new List<Checkpoint>(GetComponentsInChildren<Checkpoint>());
+        for (int i = 0; i < checkPoints.Count; i++)
+        {
+            checkPoints[i].checkpointIndex = i;
+        }
     }
 }

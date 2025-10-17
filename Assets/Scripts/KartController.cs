@@ -79,7 +79,9 @@ public class KartController : MonoBehaviour
       //Normal Rotation
       kartNormal.up = Vector3.Lerp(kartNormal.up, hitNear.normal, Time.deltaTime * 8.0f);
       kartNormal.Rotate(0, transform.eulerAngles.y, 0);
-   }
+        
+      AnimateKart(Input.GetAxis("Horizontal"));
+    }
    
    public void Steer(float steeringSignal)
    {

@@ -1,15 +1,32 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Checkpoint : MonoBehaviour
 {
+    [HideInInspector]
+    public int checkpointIndex;
+
     private void OnTriggerEnter(Collider other)
     {
-        if (other.GetComponent<CheckpointManager>() != null)
+        // Mulai pencarian dari objek yang memicu trigger
+        Transform currentObject = other.transform;
+        Transform kartRoot = null;
+
+        // Terus naik ke atas dalam hirarki sampai menemukan Tag yang benar atau sampai ke puncak
+        while (currentObject != null)
         {
-            other.GetComponent<CheckpointManager>().CheckPointReached(this);
+            if (currentObject.CompareTag("Player") || currentObject.CompareTag("NPC"))
+            {
+                kartRoot = currentObject;
+                break; // Ditemukan! Keluar dari loop.
+            }
+            currentObject = currentObject.parent; // Naik satu level
+        }
+
+        // Jika kartRoot berhasil ditemukan (tidak lagi null)...
+        if (kartRoot != null)
+        {
+            // Panggil RaceManager dengan referensi yang benar
+            RaceManager.Instance.OnCheckpointReached(kartRoot, checkpointIndex);
         }
     }
 }

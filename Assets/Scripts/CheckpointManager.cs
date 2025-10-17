@@ -5,17 +5,20 @@ using UnityEngine;
 
 public class CheckpointManager : MonoBehaviour
 {
+    [Tooltip("Seret GameObject CameraManager ke sini.")]
+    public CameraManager cameraManager;
+
     public float MaxTimeToReachNextCheckpoint = 30f;
     public float TimeLeft = 30f;
-    
+
     public KartAgent kartAgent;
     public Checkpoint nextCheckPointToReach;
-    
+
     private int CurrentCheckpointIndex;
     private List<Checkpoint> Checkpoints;
     private Checkpoint lastCheckpoint;
 
-    public event Action<Checkpoint> reachedCheckpoint; 
+    public event Action<Checkpoint> reachedCheckpoint;
 
     void Start()
     {
@@ -27,7 +30,12 @@ public class CheckpointManager : MonoBehaviour
     {
         CurrentCheckpointIndex = 0;
         TimeLeft = MaxTimeToReachNextCheckpoint;
-        
+
+        if (cameraManager != null)
+        {
+            cameraManager.SwitchToPlayerCamera();
+        }
+
         SetNextCheckpoint();
     }
 
@@ -35,40 +43,69 @@ public class CheckpointManager : MonoBehaviour
     {
         TimeLeft -= Time.deltaTime;
 
-        if (TimeLeft < 0f)
+        var agent = FindObjectOfType<KartAgent>();
+
+        if (agent != null)
         {
-            kartAgent.AddReward(-1f);
-            kartAgent.EndEpisode();
+            agent.AddReward(-1f);
+            agent.EndEpisode();
+        }
+        else
+        {
+            ResetCheckpoints();
         }
     }
 
     public void CheckPointReached(Checkpoint checkpoint)
     {
         if (nextCheckPointToReach != checkpoint) return;
-        
+
         lastCheckpoint = Checkpoints[CurrentCheckpointIndex];
         reachedCheckpoint?.Invoke(checkpoint);
         CurrentCheckpointIndex++;
 
+        var kartAgent = FindObjectOfType<KartAgent>();
+
         if (CurrentCheckpointIndex >= Checkpoints.Count)
         {
-            kartAgent.AddReward(0.5f);
-            kartAgent.EndEpisode();
+            Debug.Log("Satu lap selesai!");
+
+            if (kartAgent != null)
+            {
+                kartAgent.AddReward(0.5f);
+                kartAgent.EndEpisode();
+            }
+            else
+            {
+                ResetCheckpoints();
+            }
+
+            if (cameraManager != null)
+            {
+                cameraManager.SwitchToHighlightCamera();
+            }
         }
         else
         {
-            kartAgent.AddReward((0.5f) / Checkpoints.Count);
+            if (kartAgent != null)
+            {
+                kartAgent.AddReward((0.5f) / Checkpoints.Count);
+            }
             SetNextCheckpoint();
         }
     }
 
     private void SetNextCheckpoint()
     {
-        if (Checkpoints.Count > 0)
+        if (Checkpoints.Count > 0 && CurrentCheckpointIndex < Checkpoints.Count)
         {
             TimeLeft = MaxTimeToReachNextCheckpoint;
             nextCheckPointToReach = Checkpoints[CurrentCheckpointIndex];
-            
+        }
+        else if (Checkpoints.Count > 0)
+        {
+            CurrentCheckpointIndex = 0;
+            nextCheckPointToReach = Checkpoints[CurrentCheckpointIndex];
         }
     }
 }
