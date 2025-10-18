@@ -3,30 +3,23 @@
 public class Checkpoint : MonoBehaviour
 {
     [HideInInspector]
-    public int checkpointIndex;
+    public int checkpointIndex; // Pastikan ini diisi oleh Checkpoints.cs
+
+    // Hapus referensi CheckpointManager dari sini, biarkan dicari saat trigger
 
     private void OnTriggerEnter(Collider other)
     {
-        // Mulai pencarian dari objek yang memicu trigger
-        Transform currentObject = other.transform;
-        Transform kartRoot = null;
+        // Cari CheckpointManager pada kart yang menabrak
+        CheckpointManager checkpointManager = other.GetComponentInParent<CheckpointManager>();
 
-        // Terus naik ke atas dalam hirarki sampai menemukan Tag yang benar atau sampai ke puncak
-        while (currentObject != null)
+        if (checkpointManager == null)
         {
-            if (currentObject.CompareTag("Player") || currentObject.CompareTag("NPC"))
-            {
-                kartRoot = currentObject;
-                break; // Ditemukan! Keluar dari loop.
-            }
-            currentObject = currentObject.parent; // Naik satu level
+            // Debug.Log($"Checkpoint {name} (Index {checkpointIndex}): Ditolak trigger dari {other.name} karena tidak ada CheckpointManager."); // Bisa terlalu banyak log
+            return; // Jika bukan kart atau tidak ada manager, abaikan
         }
 
-        // Jika kartRoot berhasil ditemukan (tidak lagi null)...
-        if (kartRoot != null)
-        {
-            // Panggil RaceManager dengan referensi yang benar
-            RaceManager.Instance.OnCheckpointReached(kartRoot, checkpointIndex);
-        }
+        Debug.Log($"Checkpoint {name} (Index {checkpointIndex}): Dipicu oleh {other.name}. Memanggil CheckPointReached di manager {checkpointManager.gameObject.name}...");
+        // Panggil CheckPointReached di manager kart tersebut
+        checkpointManager.CheckPointReached(this, other);
     }
 }
