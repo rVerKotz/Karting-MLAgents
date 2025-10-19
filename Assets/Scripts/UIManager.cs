@@ -1,6 +1,6 @@
 using UnityEngine;
 using TMPro;
-using System.Text; // Untuk StringBuilder
+using System.Text;
 
 public class UIManager : MonoBehaviour
 {
@@ -8,13 +8,13 @@ public class UIManager : MonoBehaviour
     public TextMeshProUGUI timeText;
     public TextMeshProUGUI lapText;
     public TextMeshProUGUI positionText;
-    public TextMeshProUGUI leaderboardText; // Tambahkan ini untuk leaderboard
+    public TextMeshProUGUI leaderboardText;
 
-    [Header("Panel Game Over")] // Ganti nama dari winPanel
+    [Header("Panel Game Over")]
     public GameObject gameOverPanel;
-    public TextMeshProUGUI gameOverText; // Ganti nama dari winText
+    public TextMeshProUGUI gameOverText;
 
-    private StringBuilder leaderboardBuilder = new StringBuilder(); // Untuk efisiensi update leaderboard
+    private StringBuilder leaderboardBuilder = new StringBuilder();
 
     void Start()
     {
@@ -24,7 +24,7 @@ public class UIManager : MonoBehaviour
         }
         if (leaderboardText != null)
         {
-            leaderboardText.text = ""; // Kosongkan leaderboard di awal
+            leaderboardText.text = "";
         }
     }
 
@@ -35,14 +35,14 @@ public class UIManager : MonoBehaviour
         int minutes = (int)(time / 60);
         int seconds = (int)(time % 60);
         int milliseconds = (int)((time * 100) % 100);
-        timeText.text = string.Format("Time: {0:00}:{1:00}:{2:00}", minutes, seconds, milliseconds);
+        timeText.text = string.Format("{0:00}:{1:00}:{2:00}", minutes, seconds, milliseconds);
     }
 
     public void UpdateLap(int currentLap, int totalLaps)
     {
         if (lapText == null) return;
 
-        int lapToShow = Mathf.Min(currentLap, totalLaps + 1); // Tampilkan lap hingga totalLaps+1 (saat finish)
+        int lapToShow = Mathf.Min(currentLap, totalLaps + 1);
         lapText.text = $"Lap: {lapToShow}/{totalLaps}";
     }
 
@@ -50,19 +50,18 @@ public class UIManager : MonoBehaviour
     {
         if (positionText == null) return;
         positionText.text = $"Pos: {currentPosition}/{totalRacers}";
-        UpdateLeaderboard(); // Panggil update leaderboard setiap posisi berubah
+        UpdateLeaderboard();
     }
 
-    // Fungsi baru untuk mengupdate leaderboard
     public void UpdateLeaderboard()
     {
         if (leaderboardText == null || RaceManager.Instance == null) return;
 
         leaderboardBuilder.Clear();
-        var racers = RaceManager.Instance.GetRacers(); // Dapatkan list racer yang sudah diurutkan
+        var racers = RaceManager.Instance.GetRacers();
 
-        leaderboardBuilder.AppendLine("--- Leaderboard ---");
-        int displayCount = Mathf.Min(racers.Count, 5); // Tampilkan top 5
+        leaderboardBuilder.AppendLine("Leaderboard");
+        int displayCount = Mathf.Min(racers.Count, 5);
 
         for (int i = 0; i < displayCount; i++)
         {
@@ -75,7 +74,7 @@ public class UIManager : MonoBehaviour
     }
 
 
-    public void ShowGameOver(string message, float finalTime) // Ubah nama fungsi dan parameter
+    public void ShowGameOver(string message, float finalTime)
     {
         if (gameOverPanel == null || gameOverText == null) return;
 

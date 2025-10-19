@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 1536
     height: 780.8
   m_ShowMode: 4
-  m_Title: Scene
+  m_Title: Project
   m_RootView: {fileID: 2}
   m_MinSize: {x: 875, y: 300}
   m_MaxSize: {x: 10000, y: 10000}
@@ -121,7 +121,7 @@ MonoBehaviour:
   m_MinSize: {x: 400, y: 100}
   m_MaxSize: {x: 32384, y: 16192}
   vertical: 0
-  controlID: 27
+  controlID: 78
 --- !u!114 &6
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -676,9 +676,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 56.35665, y: -8.078032, z: -50.07242}
+    m_Target: {x: 10.617723, y: 14.505001, z: 2.6395333}
     speed: 2
-    m_Value: {x: 56.35665, y: -8.078032, z: -50.07242}
+    m_Value: {x: 10.617723, y: 14.505001, z: 2.6395333}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -724,13 +724,13 @@ MonoBehaviour:
     m_GridAxis: 1
     m_gridOpacity: 0.5
   m_Rotation:
-    m_Target: {x: -0.6796631, y: -0.0028628234, z: 0.0026524202, w: -0.7335147}
+    m_Target: {x: -0.60087925, y: -0.28023645, z: 0.23714875, w: -0.7100537}
     speed: 2
-    m_Value: {x: -0.6992227, y: 0.00042688806, z: -0.00041775717, w: -0.71490365}
+    m_Value: {x: -0.60158676, y: -0.27810445, z: 0.23534456, w: -0.71088976}
   m_Size:
-    m_Target: 12.259287
+    m_Target: 4.8735905
     speed: 2
-    m_Value: 12.259287
+    m_Value: 4.663723
   m_Ortho:
     m_Target: 0
     speed: 2
@@ -865,7 +865,7 @@ MonoBehaviour:
     m_OverlaysVisible: 1
   m_LockTracker:
     m_IsLocked: 0
-  m_LastSelectedObjectID: -1936
+  m_LastSelectedObjectID: 45064
 --- !u!114 &15
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -969,7 +969,7 @@ MonoBehaviour:
     m_HSlider: 0
     m_VSlider: 0
     m_IgnoreScrollWheelUntilClicked: 0
-    m_EnableMouseInput: 0
+    m_EnableMouseInput: 1
     m_EnableSliderZoomHorizontal: 0
     m_EnableSliderZoomVertical: 0
     m_UniformScale: 1
@@ -1037,10 +1037,10 @@ MonoBehaviour:
     m_OverlaysVisible: 1
   m_SceneHierarchy:
     m_TreeViewState:
-      scrollPos: {x: 0, y: 180}
-      m_SelectedIDs: 6ef8ffff
-      m_LastClickedID: -1938
-      m_ExpandedIDs: d8ebffff70f8ffffe4faffff0a550000665500004e560000d6570000d2580000
+      scrollPos: {x: 0, y: 0}
+      m_SelectedIDs: 649c0200
+      m_LastClickedID: 0
+      m_ExpandedIDs: 1a66feffba77feff5a89feff2a9dffff12a3ffff16a3ffff1aa3ffff2ca3ffffaca4ffffb6a4ffffbaa4ffffbea4ffffd0a4ffff2ea5ffff32a5ffff36a5ffff44a5ffff00aaffff82d1ffffb0d6ffff98edffff62f8ffffd8faffff50560000d8570000d4580000407700007cad0000d8ad000046ae0000c0ae000048b00000ceb0000044b1000078e90200bcea020002eb0200
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -1056,7 +1056,7 @@ MonoBehaviour:
         m_IsRenaming: 0
         m_OriginalEventType: 11
         m_IsRenamingFilename: 0
-        m_ClientGUIView: {fileID: 9}
+        m_ClientGUIView: {fileID: 7}
       m_SearchString: 
     m_ExpandedScenes: []
     m_CurrenRootInstanceID: 0
@@ -1110,7 +1110,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/TFModels
+    - Assets/Scripts
     m_Globs: []
     m_OriginalText: 
     m_ImportLogFlags: 0
@@ -1118,16 +1118,16 @@ MonoBehaviour:
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets/TFModels
+  - Assets/Scripts
   m_LastFoldersGridSize: -1
   m_LastProjectPath: C:\Users\Savero Madajaya\Documents\Game Dev\unity-ai-racing-karts-ml-agents
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
     scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: 5a5d0000
-    m_LastClickedID: 23898
-    m_ExpandedIDs: 00000000305d0000325d0000505d000000ca9a3bffffff7f
+    m_SelectedIDs: 585d0000
+    m_LastClickedID: 23896
+    m_ExpandedIDs: 00000000325d0000345d000000ca9a3bffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1155,7 +1155,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 00000000305d0000325d0000
+    m_ExpandedIDs: 00000000325d0000345d0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1207,7 +1207,7 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
     m_NewAssetIndexInList: -1
-    m_ScrollPosition: {x: 0, y: 0}
+    m_ScrollPosition: {x: 0, y: 600.2}
     m_GridSize: 64
   m_SkipHiddenPackages: 0
   m_DirectoriesAreaWidth: 191.40002

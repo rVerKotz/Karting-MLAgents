@@ -2,7 +2,6 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
-// ... (Kelas Racer tetap sama) ...
 public class Racer
 {
     public string Name { get; private set; }
@@ -60,7 +59,6 @@ public class RaceManager : MonoBehaviour
     {
         racers.Clear();
         KartController[] karts = FindObjectsOfType<KartController>();
-        Debug.Log($"RaceManager.RegisterRacers: Menemukan {karts.Length} KartControllers.");
         foreach (KartController kart in karts)
         {
             AddKart(kart);
@@ -75,11 +73,6 @@ public class RaceManager : MonoBehaviour
         {
             string racerName = kart.GetComponent<PlayerController>() != null ? "Player" : $"AI Kart {racers.Count + 1}";
             racers.Add(new Racer(racerName, kart));
-            Debug.Log($"RaceManager.AddKart: Kart {kart.name} ({racerName}) ditambahkan. Total: {racers.Count}");
-        }
-        else
-        {
-            Debug.LogWarning($"RaceManager.AddKart: Kart {kart.name} sudah terdaftar.");
         }
     }
 
@@ -89,7 +82,6 @@ public class RaceManager : MonoBehaviour
         if (racerToRemove != null)
         {
             racers.Remove(racerToRemove);
-            Debug.Log($"RaceManager.RemoveKart: Kart {kart.name} dihapus. Total: {racers.Count}");
         }
     }
 
@@ -123,7 +115,6 @@ public class RaceManager : MonoBehaviour
                 nextCpIndex = 0; // Targetnya adalah garis start
             }
 
-
             if (nextCpIndex >= 0 && nextCpIndex < checkpoints.checkPoints.Count) // Pastikan index valid
             {
                 Transform nextCheckpoint = checkpoints.checkPoints[nextCpIndex]?.transform;
@@ -135,21 +126,20 @@ public class RaceManager : MonoBehaviour
                 else
                 {
                     racer.DistanceToNextCp = float.MaxValue;
-                    // Debug.LogWarning($"[{racer.Name}] UpdateRacerDistances: nextCheckpoint atau KartTransform null (Index target: {nextCpIndex})");
                 }
             }
             else
             {
                 racer.DistanceToNextCp = float.MaxValue; // Index tidak valid
-                                                         // Debug.LogError($"[{racer.Name}] UpdateRacerDistances: Invalid nextCpIndex calculated: {nextCpIndex}");
             }
         }
     }
 
     void SortRacers()
     {
+        // Urutkan berdasarkan Lap (tertinggi), lalu CheckpointIndex (tertinggi), lalu jarak ke CP berikutnya (terendah)
         racers = racers.OrderByDescending(r => r.Lap)
-                       .ThenByDescending(r => r.CheckpointIndex) // Index TERTINGGI yang dituju/dicapai lebih dulu
+                       .ThenByDescending(r => r.CheckpointIndex)
                        .ThenBy(r => r.DistanceToNextCp)
                        .ToList();
     }
@@ -167,27 +157,18 @@ public class RaceManager : MonoBehaviour
         }
     }
 
-    public void OnCheckpointReached(KartController kartController, int passedCheckpointIndex) // Ubah nama parameter
+    public void OnCheckpointReached(KartController kartController, int passedCheckpointIndex)
     {
         if (checkpoints == null || checkpoints.checkPoints == null || checkpoints.checkPoints.Count == 0)
         {
-            Debug.LogError("RaceManager.OnCheckpointReached: Checkpoints tidak valid!");
             return;
         }
-
 
         Racer racer = racers.FirstOrDefault(r => r.KartController == kartController);
         if (racer == null)
         {
-            Debug.LogWarning($"RaceManager.OnCheckpointReached: Racer untuk {kartController.name} tidak ditemukan.");
             return;
         }
-
-        // --- AWAL DEBUGGING LOG ---
-        string passedCpName = (passedCheckpointIndex >= 0 && passedCheckpointIndex < checkpoints.checkPoints.Count) ? checkpoints.checkPoints[passedCheckpointIndex].name : "INVALID INDEX";
-        Debug.Log($"[{racer.Name}] RaceManager.OnCheckpointReached: Melewati CP Index={passedCheckpointIndex} ({passedCpName}). Target saat ini adalah Index={racer.CheckpointIndex}.");
-        // --- AKHIR DEBUGGING LOG ---
-
 
         // Dapatkan index checkpoint yang SEHARUSNYA dilewati (target saat ini)
         int expectedCheckpointToPass = racer.CheckpointIndex % checkpoints.checkPoints.Count;
@@ -198,58 +179,30 @@ public class RaceManager : MonoBehaviour
         }
 
 
-        // Kondisi utama: Checkpoint yang dilewati adalah yang diharapkan
-        if (passedCheckpointIndex == expectedCheckpointToPass)
+        // Kondisi khusus: Melewati garis start (index 0) SETELAH menyelesaikan semua checkpoint (target >= count)
+        if (passedCheckpointIndex == 0 && racer.CheckpointIndex >= checkpoints.checkPoints.Count)
         {
-            Debug.Log($"[{racer.Name}] Passed CORRECT checkpoint ({passedCpName}). Calculating next target...");
-
+            OnLapCompleted(racer); // Proses penambahan lap
+            racer.CheckpointIndex = 1; // Target berikutnya adalah checkpoint setelah start (index 1)
+        }
+        // Kondisi utama: Checkpoint yang dilewati adalah yang diharapkan
+        else if (passedCheckpointIndex == expectedCheckpointToPass)
+        {
             // Tentukan index checkpoint BERIKUTNYA yang harus dituju
             int nextTargetIndex = (passedCheckpointIndex + 1);
 
-            if (passedCheckpointIndex == 0 && racer.CheckpointIndex >= checkpoints.checkPoints.Count)
+            // Jika checkpoint yang baru dilewati adalah yang TERAKHIR (index = count-1)
+            if (passedCheckpointIndex == checkpoints.checkPoints.Count - 1)
             {
-                Debug.Log($"[{racer.Name}] Crossed FINISH LINE (Index 0) after completing lap. Processing lap completion...");
-                OnLapCompleted(racer); // Proses penambahan lap
-                racer.CheckpointIndex = 1; // Target berikutnya adalah checkpoint setelah start (index 1)
-                Debug.Log($"[{racer.Name}] Lap completed. NEW TARGET INDEX SET TO: {racer.CheckpointIndex}");
-            }
-            // Kondisi utama: Checkpoint yang dilewati adalah yang diharapkan
-            else if (passedCheckpointIndex == expectedCheckpointToPass)
-            {
-                Debug.Log($"[{racer.Name}] Passed CORRECT checkpoint ({passedCpName}). Calculating next target...");
-
-                // Tentukan index checkpoint BERIKUTNYA yang harus dituju
-                nextTargetIndex = (passedCheckpointIndex + 1);
-
-                // Jika checkpoint yang baru dilewati adalah yang TERAKHIR (index = count-1)
-                if (passedCheckpointIndex == checkpoints.checkPoints.Count - 1)
-                {
-                    // Target berikutnya adalah 'state' di luar batas index, menandakan siap melewati garis start
-                    nextTargetIndex = checkpoints.checkPoints.Count;
-                    Debug.Log($"[{racer.Name}] Passed LAST checkpoint. Next target state set to {nextTargetIndex} (ready for finish line).");
-                }
-
-                // Update target racer
-                racer.CheckpointIndex = nextTargetIndex;
-                Debug.Log($"[{racer.Name}] TARGET INDEX UPDATED TO: {racer.CheckpointIndex}");
+                // Target berikutnya adalah 'state' di luar batas index, menandakan siap melewati garis start (index = count)
+                nextTargetIndex = checkpoints.checkPoints.Count;
             }
 
             // Update target racer
             racer.CheckpointIndex = nextTargetIndex;
-            Debug.Log($"[{racer.Name}] TARGET INDEX UPDATED TO: {racer.CheckpointIndex}");
-
-        }
-        // Kondisi khusus: Melewati garis start (index 0) SETELAH menyelesaikan semua checkpoint (target >= count)
-        else if (passedCheckpointIndex == 0 && racer.CheckpointIndex >= checkpoints.checkPoints.Count)
-        {
-            Debug.Log($"[{racer.Name}] Crossed FINISH LINE (Index 0) after completing lap. Processing lap completion...");
-            OnLapCompleted(racer); // Proses penambahan lap
-            racer.CheckpointIndex = 1; // Target berikutnya adalah checkpoint setelah start (index 1)
-            Debug.Log($"[{racer.Name}] Lap completed. NEW TARGET INDEX SET TO: {racer.CheckpointIndex}");
         }
         else
         {
-            Debug.LogWarning($"[{racer.Name}] Passed WRONG checkpoint ({passedCpName}). Expected: Index {expectedCheckpointToPass}. Ignoring.");
             // Jika checkpoint yang dilewati bukan yang diharapkan, abaikan saja
         }
 
@@ -263,12 +216,7 @@ public class RaceManager : MonoBehaviour
 
         if (cm != null)
         {
-            Debug.Log($"[{racer.Name}] Calling SetNextCheckpointInternal on {cm.gameObject.name}...");
             cm.SetNextCheckpointInternal();
-        }
-        else
-        {
-            Debug.LogError($"[{racer.Name}] RaceManager.OnCheckpointReached: Gagal menemukan CheckpointManager untuk memanggil SetNextCheckpointInternal!");
         }
     }
 
@@ -278,12 +226,7 @@ public class RaceManager : MonoBehaviour
         if (racer != null)
         {
             racer.Lap = 1;
-            racer.CheckpointIndex = 0; 
-            Debug.Log($"[{racer.Name}] RaceManager.ResetRacerState: State direset (Lap: {racer.Lap}, Target CP Index: {racer.CheckpointIndex})");
-        }
-        else
-        {
-            Debug.LogWarning($"RaceManager.ResetRacerState: Gagal menemukan racer untuk {kartController?.name}");
+            racer.CheckpointIndex = 0;
         }
     }
 
@@ -292,40 +235,47 @@ public class RaceManager : MonoBehaviour
     {
         if (isRaceOver) return;
         racer.Lap++;
-        Debug.Log($"[{racer.Name}] OnLapCompleted: Lap incremented to {racer.Lap}");
 
         if (racer.Name == "Player" && uiManager != null)
         {
             uiManager.UpdateLap(racer.Lap, totalLaps);
+
             if (racer.Lap > totalLaps)
             {
-                Debug.Log($"[{racer.Name}] Player finished the race!");
-                EndRace(racer);
+                int finalPosition = racers.IndexOf(racer) + 1;
+
+                if (finalPosition <= 5)
+                {
+                    EndRace($"Selamat, Anda Menang!\nPosisi #{finalPosition}");
+                }
+                else
+                {
+                    EndRace($"Anda Kalah\nPosisi #{finalPosition}");
+                }
             }
         }
-        else // Untuk AI
+        else
         {
             if (racer.Lap > totalLaps)
             {
-                Debug.Log($"[{racer.Name}] AI finished the race!");
+                EndRace($"[{racer.Name}] AI finished the race!");
                 if (racer.KartController?.GetComponent<KartAgent>() != null)
                 {
-                    Debug.Log($"[{racer.Name}] Ending episode for AI agent.");
-                    // racer.KartController.GetComponent<KartAgent>().EndEpisode(); // Bisa diaktifkan jika ingin AI berhenti setelah finish
+                    EndRace($"[{racer.Name}] Ending episode for AI agent.");
+                    racer.KartController.GetComponent<KartAgent>().EndEpisode();
                 }
             }
         }
     }
 
-    void EndRace(Racer winner)
+    void EndRace(string message)
     {
         isRaceOver = true;
         Time.timeScale = 0;
         if (uiManager != null)
         {
-            uiManager.ShowGameOver($"Pemenang: {winner.Name}!", raceTime);
+            uiManager.ShowGameOver(message, raceTime);
         }
-        Debug.Log($"Race Over! Winner: {winner.Name}, Time: {raceTime}");
     }
 
     public List<Racer> GetRacers()
