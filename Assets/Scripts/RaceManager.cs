@@ -6,7 +6,7 @@ public class Racer
 {
     public string Name { get; private set; }
     public int Lap { get; set; }
-    public int CheckpointIndex { get; set; } // Ini adalah INDEX DARI CHECKPOINT BERIKUTNYA YANG HARUS DICAPAI
+    public int CheckpointIndex { get; set; }
     public float DistanceToNextCp { get; set; }
     public Transform KartTransform { get; private set; }
     public KartController KartController { get; private set; }
@@ -15,7 +15,7 @@ public class Racer
     {
         Name = name;
         Lap = 1;
-        CheckpointIndex = 0; // Awalnya, target adalah checkpoint index 0
+        CheckpointIndex = 0;
         KartTransform = kartController.transform;
         KartController = kartController;
     }
@@ -36,6 +36,7 @@ public class RaceManager : MonoBehaviour
     private List<Racer> racers = new List<Racer>();
     private float raceTime;
     private bool isRaceOver = false;
+    private bool isTutorialHidden = false;
 
     void Awake()
     {
@@ -44,7 +45,8 @@ public class RaceManager : MonoBehaviour
 
     void Start()
     {
-        Time.timeScale = 1;
+        Time.timeScale = 0f;
+        isTutorialHidden = false;
         RegisterRacers();
 
         Racer playerRacer = racers.FirstOrDefault(r => r.Name == "Player");
@@ -99,6 +101,18 @@ public class RaceManager : MonoBehaviour
         {
             uiManager.UpdateTime(raceTime);
         }
+    }
+
+    public void NotifyPlayerInput()
+    {
+        if (isTutorialHidden) return;
+        Time.timeScale = 1f;
+        if (uiManager != null)
+        {
+            uiManager.HideTutorial();
+        }
+
+        isTutorialHidden = true;
     }
 
     void UpdateRacerDistances()
