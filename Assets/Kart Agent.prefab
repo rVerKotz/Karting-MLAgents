@@ -148,7 +148,7 @@ GameObject:
   - component: {fileID: 3137537921078816490}
   - component: {fileID: 3137537921078816491}
   - component: {fileID: 615356445828344825}
-  m_Layer: 2
+  m_Layer: 6
   m_Name: Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1120,9 +1120,9 @@ MonoBehaviour:
   kartModel: {fileID: 3137537921393488654}
   kartNormal: {fileID: 3137537922403377517}
   sphere: {fileID: 3137537921078816491}
-  acceleration: 65
-  steering: 15
-  gravity: 25
+  acceleration: 200
+  steering: 50
+  gravity: 60
   layerMask:
     serializedVersion: 2
     m_Bits: 3635
@@ -1148,8 +1148,8 @@ MonoBehaviour:
   _checkpointManager: {fileID: 615356445828344825}
   _kartController: {fileID: 0}
   checkpointRewardValue: 0.2
-  speedMultiplier: 0.001
-  directionMultiplier: 0.01
+  speedMultiplier: 0.05
+  directionMultiplier: 0.05
   timePenaltyPerStep: 0.001
 --- !u!114 &3137537921882263139
 MonoBehaviour:
@@ -1173,7 +1173,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: 1657b17d2b8c1b442933f0fca633d480, type: 3}
+  m_Model: {fileID: 5022602860645237092, guid: 15ac3873d7359624f8639b8210918c7b, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: KartAgent

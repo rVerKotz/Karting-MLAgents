@@ -48,9 +48,11 @@ public class RaceManager : MonoBehaviour
         Time.timeScale = 1;
         RegisterRacers();
 
-        if (uiManager != null && racers.Any(r => r.Name == "Player"))
+        Racer playerRacer = racers.FirstOrDefault(r => r.Name == "Player");
+
+        if (uiManager != null && playerRacer != null)
         {
-            uiManager.UpdateLap(1, totalLaps);
+            uiManager.UpdateLap(playerRacer.Lap, totalLaps);
         }
     }
 
@@ -204,12 +206,32 @@ public class RaceManager : MonoBehaviour
             // Tentukan index checkpoint BERIKUTNYA yang harus dituju
             int nextTargetIndex = (passedCheckpointIndex + 1);
 
-            // Jika checkpoint yang baru dilewati adalah yang TERAKHIR (index = count-1)
-            if (passedCheckpointIndex == checkpoints.checkPoints.Count - 1)
+            if (passedCheckpointIndex == 0 && racer.CheckpointIndex >= checkpoints.checkPoints.Count)
             {
-                // Target berikutnya adalah 'state' di luar batas index, menandakan siap melewati garis start
-                nextTargetIndex = checkpoints.checkPoints.Count;
-                Debug.Log($"[{racer.Name}] Passed LAST checkpoint. Next target state set to {nextTargetIndex} (ready for finish line).");
+                Debug.Log($"[{racer.Name}] Crossed FINISH LINE (Index 0) after completing lap. Processing lap completion...");
+                OnLapCompleted(racer); // Proses penambahan lap
+                racer.CheckpointIndex = 1; // Target berikutnya adalah checkpoint setelah start (index 1)
+                Debug.Log($"[{racer.Name}] Lap completed. NEW TARGET INDEX SET TO: {racer.CheckpointIndex}");
+            }
+            // Kondisi utama: Checkpoint yang dilewati adalah yang diharapkan
+            else if (passedCheckpointIndex == expectedCheckpointToPass)
+            {
+                Debug.Log($"[{racer.Name}] Passed CORRECT checkpoint ({passedCpName}). Calculating next target...");
+
+                // Tentukan index checkpoint BERIKUTNYA yang harus dituju
+                nextTargetIndex = (passedCheckpointIndex + 1);
+
+                // Jika checkpoint yang baru dilewati adalah yang TERAKHIR (index = count-1)
+                if (passedCheckpointIndex == checkpoints.checkPoints.Count - 1)
+                {
+                    // Target berikutnya adalah 'state' di luar batas index, menandakan siap melewati garis start
+                    nextTargetIndex = checkpoints.checkPoints.Count;
+                    Debug.Log($"[{racer.Name}] Passed LAST checkpoint. Next target state set to {nextTargetIndex} (ready for finish line).");
+                }
+
+                // Update target racer
+                racer.CheckpointIndex = nextTargetIndex;
+                Debug.Log($"[{racer.Name}] TARGET INDEX UPDATED TO: {racer.CheckpointIndex}");
             }
 
             // Update target racer
