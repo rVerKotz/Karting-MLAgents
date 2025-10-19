@@ -6,7 +6,6 @@
 /[Tt]emp/
 /[Oo]bj/
 /[Bb]uild/
-/[Bb]uilds/
 /[Ll]ogs/
 /[Mm]emoryCaptures/
 
@@ -65,7 +64,7 @@ crashlytics-build.properties
 # Output Artifacts
 /results
 # Output Builds
-/Builds
+#/Builds
 
 # Training environments
 /envs
@@ -98,12 +97,12 @@ crashlytics-build.properties
 /com.unity.ml-agents/sysinfo.txt
 
 # Builds
-*.apk
-*.unitypackage
-*.app
-*.exe
-*.x86_64
-*.x86
+#*.apk
+#*.unitypackage
+#*.app
+#*.exe
+#*.x86_64
+#*.x86
 
 # Plugins
 /com.unity.ml-agents/VideoRecorder*
