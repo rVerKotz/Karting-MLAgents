@@ -31,7 +31,28 @@ public class KartController : MonoBehaviour
    public void Awake()
    {
       _spawnPointManager = FindObjectOfType<SpawnPointManager>();
-   }
+        if (_spawnPointManager == null)
+        {
+            Debug.LogWarning("SpawnPointManager tidak ditemukan saat Awake. Akan dicoba lagi di Respawn jika diperlukan.");
+        }
+
+        if (sphere == null)
+        {
+            Transform sphereTransform = transform.Find("SphereCollider");
+            if (sphereTransform != null)
+            {
+                sphere = sphereTransform.GetComponent<Rigidbody>();
+            }
+            if (sphere == null)
+            {
+                sphere = GetComponentInChildren<Rigidbody>();
+            }
+            if (sphere == null)
+            {
+                Debug.LogError("Rigidbody 'sphere' tidak ditemukan!");
+            }
+        }
+    }
 
    public void ApplyAcceleration(float input)
    {
@@ -55,35 +76,33 @@ public class KartController : MonoBehaviour
    
    public void Respawn()
    {
+      if(_spawnPointManager == null ) _spawnPointManager = FindObjectOfType<SpawnPointManager>();
       Vector3 pos = _spawnPointManager.SelectRandomSpawnpoint();
       sphere.MovePosition(pos);
       transform.position = pos - new Vector3(0, 0.4f, 0);
    }
-   
-   public void FixedUpdate()
-   {
-      sphere.AddForce(-kartModel.transform.right * currentSpeed, ForceMode.Acceleration);
 
-      //Gravity
-      sphere.AddForce(Vector3.down * gravity, ForceMode.Acceleration);
-      
-      //Follow Collider
-      transform.position = sphere.transform.position - new Vector3(0, 0.4f, 0);
+    public void FixedUpdate()
+    {
+        if (kartModel == null || sphere == null || kartNormal == null) return;
 
-      //Steering
-      transform.eulerAngles = Vector3.Lerp(transform.eulerAngles, new Vector3(0, transform.eulerAngles.y + currentRotate, 0), Time.deltaTime * 5f);
-      
-      Physics.Raycast(transform.position + (transform.up*.1f), Vector3.down, out RaycastHit hitOn, 1.1f,layerMask);
-      Physics.Raycast(transform.position + (transform.up * .1f)   , Vector3.down, out RaycastHit hitNear, 2.0f, layerMask);
+        sphere.AddForce(-kartModel.transform.right * currentSpeed, ForceMode.Acceleration);
+        sphere.AddForce(Vector3.down * gravity, ForceMode.Acceleration);
+        transform.position = sphere.transform.position - new Vector3(0, 0.4f, 0);
+        transform.eulerAngles = Vector3.Lerp(transform.eulerAngles, new Vector3(0, transform.eulerAngles.y + currentRotate, 0), Time.deltaTime * 5f);
 
-      //Normal Rotation
-      kartNormal.up = Vector3.Lerp(kartNormal.up, hitNear.normal, Time.deltaTime * 8.0f);
-      kartNormal.Rotate(0, transform.eulerAngles.y, 0);
-        
-      AnimateKart(Input.GetAxis("Horizontal"));
+        RaycastHit hitOn, hitNear;
+        bool didHitOn = Physics.Raycast(transform.position + (transform.up * 0.1f), Vector3.down, out hitOn, 1.1f, layerMask);
+        bool didHitNear = Physics.Raycast(transform.position + (transform.up * 0.1f), Vector3.down, out hitNear, 2.0f, layerMask);
+
+        if (didHitNear)
+        {
+            kartNormal.up = Vector3.Lerp(kartNormal.up, hitNear.normal, Time.deltaTime * 8.0f);
+            kartNormal.Rotate(0, transform.eulerAngles.y, 0);
+        }
     }
-   
-   public void Steer(float steeringSignal)
+
+    public void Steer(float steeringSignal)
    {
       int steerDirection = steeringSignal > 0 ? 1 : -1;
       float steeringStrength = Mathf.Abs(steeringSignal);

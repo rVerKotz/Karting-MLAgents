@@ -10,6 +10,9 @@ public class UIManager : MonoBehaviour
     public TextMeshProUGUI positionText;
     public TextMeshProUGUI leaderboardText;
 
+    [Header("Tutorial UI")]
+    public TextMeshProUGUI tutorialText;
+
     [Header("Panel Game Over")]
     public GameObject gameOverPanel;
     public TextMeshProUGUI gameOverText;
@@ -25,6 +28,18 @@ public class UIManager : MonoBehaviour
         if (leaderboardText != null)
         {
             leaderboardText.text = "";
+        }
+        if (tutorialText != null)
+        {
+            tutorialText.gameObject.SetActive(true);
+        }
+    }
+
+    public void HideTutorial()
+    {
+        if (tutorialText != null)
+        {
+            tutorialText.gameObject.SetActive(false);
         }
     }
 
